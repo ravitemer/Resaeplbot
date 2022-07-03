@@ -1,0 +1,10 @@
+{
+  "name" : "admin",
+  "main" : "./index.js",
+  "exports" : {
+    "." : {
+      "require" : "./index.js",
+      "import" : "./index.js"
+    }
+  }
+}
