@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import CryptoJS from "crypto-js"
 import {auth} from "./firebase/init.js"
-import FirebaseCustomAdmin from "./firebase/index.js";
-
-const {Auth} = FirebaseCustomAdmin
+import FirebaseAdmin from "./firebase/index.js";
+// const {Auth} = FirebaseAdmin
 
 
 //=============================================================================

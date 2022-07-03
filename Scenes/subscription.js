@@ -39,7 +39,7 @@ async function onSuccessfulPayment({ ctx }) {
 async function loadUserData(ctx) {
 	const { username: uid } = ctx.message.from
 	if (!uid) console.log(new Error("NO uid provided"))
-	const doc = await admin.getUserDoc(uid)
+	const doc = await admin.user.get({uid})
 	if (!doc) return await ctx.reply("Oops! No user found")
 	ctx.wizard.state.doc = doc
 	return doc
@@ -136,7 +136,7 @@ function createMenu(doc = {}) {
 					name: "📣 Refer",
 					handler: async ({ ctx }) => {
 						ctx.answerCbQuery()
-						admin.sendReferralLink({ ctx })
+						admin.utils.sendReferralLink({ ctx })
 					}
 				}
 			}

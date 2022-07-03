@@ -8,7 +8,7 @@ export default {
     const user = {userName : username, firstName : first_name,lastName : last_name,uid : username, chatId : id, createdAt : date}
     if (!uid) return 
     try {
-       await admin.sendReferralLink({uid,ctx})
+       await admin.utils.sendReferralLink({uid,ctx})
     } catch (e){
       console.log(e)
     }

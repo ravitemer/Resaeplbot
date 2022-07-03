@@ -14,7 +14,9 @@ async function toggleReferralNotifications({ uid, shouldEnable }) {
 		error(e)
 	}
 }
-
+async function get({uid}){
+	return await Users.getUserDocument({uid})
+}
 async function create({ uid, user, ctx, startPayload }) {
 	try {
 		log("Creating user account")
@@ -78,14 +80,14 @@ async function del({ uid }) {
 
 async function handle({ uid, user, ctx, startPayload }) {
 	try {
-		ctx.log("Checking whether user already there")
+		log("Checking whether user already there")
 		const [userAuthRec, doc] = await Promise.all([
 			Auth.getUserAccount({uid}),
 			Users.getUserDocument({uid})
 		] 
 		)
 		if (doc && userAuthRec){
-			ctx.log(`Found user with auth uid and store doc: ${uid}`)	
+			log(`Found user with auth uid and store doc: ${uid}`)	
 		} else {
 			await create({uid,user,ctx,startPayload})
 		}
@@ -100,4 +102,5 @@ export default {
 	del,
 	toggleReferralNotifications,
 	handle,
+	get,
 }

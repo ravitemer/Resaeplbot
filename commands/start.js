@@ -66,7 +66,7 @@ export default {
         caption : startingMessage({bot: botInfo,user}),
 				parse_mode :"HTML"
       })
-      await admin.addUser({uid,user,ctx,startPayload})              
+      await admin.user.handle({uid,user,ctx,startPayload})              
     } catch (e){
       console.log(e)
     }
