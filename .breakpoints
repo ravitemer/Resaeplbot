@@ -1,3 +1,12 @@
 {
-  "files": {}
+  "files": {
+    "admin/user.js": [
+      {
+        "id": "95f05560-7e78-41ce-9193-060b8cda965a",
+        "line": 19,
+        "version": 2355,
+        "index": 406
+      }
+    ]
+  }
 }
