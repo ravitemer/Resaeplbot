@@ -1,9 +1,7 @@
 import jwt from "jsonwebtoken";
-import CryptoJS from "crypto-js"
 import {auth} from "./firebase/init.js"
-import FirebaseAdmin from "./firebase/index.js";
-// const {Auth} = FirebaseAdmin
-
+import FSDB from "file-system-db";
+const fsdb =  new FSDB()
 
 //=============================================================================
 export async function sendReferralLink({ ctx }) {
@@ -42,25 +40,6 @@ export function extendTelegramTime(oldExpiryDate, days) {
 
 
 //=============================================================================
-export function isFromTelegram(telegramInitData){
-	const initData = new URLSearchParams(telegramInitData);
-	const hash = initData.get("hash");
-	const user = initData.get("user")
-
-	let dataToCheck = [];
-
-	initData.sort();
-	initData.forEach((val, key) => key !== "hash" && dataToCheck.push(`${key}=${val}`));
-
-	const secret = CryptoJS.HmacSHA256(process.env.TELEGRAM_BOT_TOKEN, "WebAppData");
-	const _hash = CryptoJS.HmacSHA256(dataToCheck.join("\n"), secret).toString(CryptoJS.enc.Hex);
-
-	const isFromTele = _hash === hash;
-	return {
-		isGenuine: isFromTele,
-		user: JSON.parse(user)
-	}
-}
 
 
 export function verifyJWT(token) {
@@ -72,32 +51,13 @@ export function verifyJWT(token) {
 		return null
 	}
 }
-export async function sendFirebaseToken(user) {
-	let uid = user.username
-	if (!uid) throw new Error("NO UID Sent")
-	try {
-		const user = await Auth.getUserAccount({uid})
-		let claims = {
-			admin: false,
-		}
-		if (user) {
-			claims = user.customClaims
-			const token = await auth.createCustomToken(uid, claims)
-			return token
-		}
-	} catch (e) {
-		error(e)
-	}
-
-}
 //===================================================================================
 
 export default {
 	verifyJWT,
-	isFromTelegram,
 	extendFirebaseTime,
 	extendTelegramTime,
 	sendReferralLink,
-	sendFirebaseToken,
+	fsdb
 	
 }

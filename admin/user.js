@@ -1,5 +1,6 @@
 import FirebaseCustomAdmin from "./firebase/index.js";
 const { Auth, Firestore } = FirebaseCustomAdmin;
+import CryptoJS from "crypto-js"
 const { Users } = Firestore;
 
 
@@ -88,11 +89,52 @@ async function handle({ uid, user, ctx, startPayload }) {
 		)
 		if (doc && userAuthRec){
 			log(`Found user with auth uid and store doc: ${uid}`)	
+			await ctx.replyWithHTML(`
+Hey! It seems you knew me already🤖. Thanks for visiting me again.
+`)
 		} else {
 			await create({uid,user,ctx,startPayload})
 		}
 	} catch (e) {
 		error(e)
+	}
+}
+export async function sendFirebaseToken(user) {
+	let uid = user.username
+	if (!uid) throw new Error("NO UID Sent")
+	try {
+		const user = await Auth.getUserAccount({uid})
+		let claims = {
+			admin: false,
+		}
+		if (user) {
+			claims = user.customClaims
+			const token = await auth.createCustomToken(uid, claims)
+			return token
+		}
+	} catch (e) {
+		error(e)
+	}
+
+}
+
+export function isFromTelegram(telegramInitData){
+	const initData = new URLSearchParams(telegramInitData);
+	const hash = initData.get("hash");
+	const user = initData.get("user")
+
+	let dataToCheck = [];
+
+	initData.sort();
+	initData.forEach((val, key) => key !== "hash" && dataToCheck.push(`${key}=${val}`));
+
+	const secret = CryptoJS.HmacSHA256(process.env.TELEGRAM_BOT_TOKEN, "WebAppData");
+	const _hash = CryptoJS.HmacSHA256(dataToCheck.join("\n"), secret).toString(CryptoJS.enc.Hex);
+
+	const isFromTele = _hash === hash;
+	return {
+		isGenuine: isFromTele,
+		user: JSON.parse(user)
 	}
 }
 
@@ -103,4 +145,6 @@ export default {
 	toggleReferralNotifications,
 	handle,
 	get,
+	sendFirebaseToken,
+	isFromTelegram,
 }

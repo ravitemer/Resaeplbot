@@ -80,7 +80,6 @@ async function generateRoutes(rootFolder){
 
 export default async function powerExpress(app){
  const routers = await generateRoutes(_dirname)  
- console.log(routers)
  for (let routerName in routers){
    app.use(routerName,...routers[routerName].middleware || [],routers[routerName].router || (() => {}))
  }

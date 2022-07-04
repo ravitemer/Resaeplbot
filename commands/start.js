@@ -62,10 +62,10 @@ export default {
               startPayload = messageParts[1].trim()
         }
       }
-      await ctx.replyWithPhoto({source : fs.createReadStream("./public/images/bot.jpg")},{
+				await ctx.replyWithPhoto({source : fs.createReadStream("./public/images/bot.jpg")},{
         caption : startingMessage({bot: botInfo,user}),
 				parse_mode :"HTML"
-      })
+      }),
       await admin.user.handle({uid,user,ctx,startPayload})              
     } catch (e){
       console.log(e)
