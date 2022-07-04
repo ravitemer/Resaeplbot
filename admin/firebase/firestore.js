@@ -16,7 +16,7 @@ async function createUserDocument({ uid, user }) {
 async function getUserDocument({ uid }) {
 	try {
 		const doc = await firestore.collection("Users").doc(uid).get()
-		if (!doc.exists()) return null
+		if (!doc.exists) return null
 		return doc.data()
 	} catch (e) {
 		error(e)
