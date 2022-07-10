@@ -3,7 +3,8 @@ async function sendMenu({ ctx, menuData }) {
 	const inlineButtons = keyboard.map(obj => {
 		return Object.entries(obj).map(([id, { name, handler }]) => markup.button.callback(name, id))
 	})
-	await ctx.reply(text, markup.inlineKeyboard(inlineButtons))
+	const msg = await ctx.reply(text, markup.inlineKeyboard(inlineButtons))
+	return {message_id : msg.message_id,chat_id: msg.chat.id}
 }
 
 async function editMenu({ ctx, menuData }) {
@@ -11,7 +12,8 @@ async function editMenu({ ctx, menuData }) {
 	const inlineButtons = keyboard.map(obj => {
 		return Object.entries(obj).map(([id, { name, handler }]) => markup.button.callback(name, id))
 	})
-	await ctx.editMessageText(text, markup.inlineKeyboard(inlineButtons))
+const msg = 	await ctx.editMessageText(text, markup.inlineKeyboard(inlineButtons))
+	return {message_id : msg.message_id,chat_id: msg.chat.id}
 }
 async function editMenuTele({ ctx, menuData, chat_id, message_id }) {
 	const { text, keyboard } = menuData
@@ -24,6 +26,7 @@ async function editMenuTele({ ctx, menuData, chat_id, message_id }) {
 		}
 	}
 	)
+	return {chat_id,message_id}
 }
 
 function menuBackButton(id) {

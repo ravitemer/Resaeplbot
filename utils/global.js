@@ -25,7 +25,24 @@ for (let level in logsObj){
 
 const isDev = () => process.env.NODE_ENV == "development"
 
-
+function emojify(strings,...args){
+	let numbers = {
+		"0" : "0️⃣",
+		"1" : "1️⃣",
+		"2" : "2️⃣",
+		"3" : "3️⃣",
+		"4" : "4️⃣",
+		"5" : "5️⃣",
+		"6" : "6️⃣",
+		"7" : "7️⃣",
+		"8" : "8️⃣",
+		"9" : "9️⃣",
+	}
+	const str = `${args[0]}`
+	return str.replace(/[0-9]/g,(match) => {
+		return numbers[match]
+	})
+}
 
 
 export default {
@@ -45,4 +62,5 @@ export default {
   ...Keyboards,
   admin, 
   dayjs,
+	emojify,
 }

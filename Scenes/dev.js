@@ -10,7 +10,8 @@ const devFeatures = {
 		documentCategories = Object.keys(documentCategories)
 		await ctx[dontEdit ? "reply" : "editMessageText"]("Choose a category to upload to...", markup.inlineKeyboard([
 			...documentCategories.map(cat => ([markup.button.callback(cat, `upload_file_cat_${cat}`)])),
-			[markup.button.callback("Create category", `upload_file_cat_create`)]
+			[markup.button.callback("Create category", `upload_file_cat_create`)],
+			[markup.button.callback("⏪ Back", `back_to_main`)]
 		]))
 	}
 }
@@ -56,6 +57,21 @@ composer.action(/upload_file_subcat_.+/, async (ctx) => {
 		await onSubCategoryClick({ ctx, subCategory })
 	}
 })
+composer.action(/back_to_.+/,async ctx => {
+	const buttonId = ctx.match[0]
+	const destination = buttonId.substr(8)
+	ctx.answerCbQuery()
+	 if (destination == "main") {
+		 await ctx.editMessageText("What can I do for you?", markup.inlineKeyboard([
+			[
+				markup.button.callback("⏫ Upload files", "dev_upload_files"),
+			]
+		]))
+	 } else if (destination == "cat") {
+		 await devFeatures['upload_files']({ctx})
+	 }
+})
+
 
 //=========================== Commands =================================
 composer.command("createcat", async (ctx) => {
@@ -63,7 +79,7 @@ composer.command("createcat", async (ctx) => {
 	if (!category) return ctx.reply('No category provided')
 	const exists = admin.utils.fsdb.has(`documents.${category}`)
 	if (exists) return ctx.reply("That category already exists")
-	admin.utils.fsdb.set(`documents.${category}`, { general: [] })
+	admin.utils.fsdb.set(`documents.${category}`, { Miscellaneous: [] })
 	await devFeatures['upload_files']({ ctx, dontEdit: true })
 })
 composer.command("createsubcat", async (ctx) => {
@@ -105,14 +121,15 @@ export default scene;
 async function onCategoryClick({ ctx, category, dontEdit }) {
 	const categoryDb = admin.utils.fsdb.get(`documents.${category}`)
 	let newCategoryDb = {}
-	if (!categoryDb) newCategoryDb = { general: [] }
+	if (!categoryDb) newCategoryDb = { Miscellaneous: [] }
 	else newCategoryDb = categoryDb
 	const subcategories = Object.keys(newCategoryDb)
 	ctx.wizard.state.category = category
 	if (subcategories.length > 0) {
 		await ctx[dontEdit ? "reply" : "editMessageText"](`Choose a subcategory in ${category}`, markup.inlineKeyboard([
 			...subcategories.map(subcat => ([markup.button.callback(subcat, `upload_file_subcat_${subcat}`)])),
-			[markup.button.callback("Create a subcategory", `upload_file_subcat_create`)]
+			[markup.button.callback("Create a subcategory", `upload_file_subcat_create`)],
+			[markup.button.callback("⏪ Back", `back_to_cat`)]
 		]))
 	}
 }

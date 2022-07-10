@@ -52,7 +52,8 @@ export default async function powerBot(bot,onCompletion){
   isDev() && bot.use(Telegraf.log())
   //++++++++++++++++++++++++++++++++++++++++USE ROOT FOLDERS+++++++++++++++++++
   utils.coupleBotWithFolders(bot,funcs)
-  
+  //++++++++++++++++++++++++++Use Composers+++++++++++++++++++
+	bot.use(composers.subscription)
   //+++++++++++++++++++++++++++++++++Individual functions++++++++++++++++++++++
   bot.catch((err, ctx) => {
 	return ctx.reply(`Ooops, encountered an error for ${ctx.updateType}`, err)

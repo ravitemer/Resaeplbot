@@ -21,7 +21,7 @@ app.use(cors({
   ]
 }))
 
-
+console.log(composers)
 
 //Add events,actions from folders to the BOT
 powerBot(bot,async (bot) => {

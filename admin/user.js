@@ -117,7 +117,18 @@ export async function sendFirebaseToken(user) {
 	}
 
 }
-
+export async function isAllowed({uid}){
+	if (!uid) return error('No uid provided')
+	try {
+		const userDoc = await get({uid})
+		if (!userDoc) return error("No user found")
+		const expiryDate = (userDoc.expiryDate && userDoc.expiryDate.toDate) && userDoc.expiryDate.toDate()
+		if (!expiryDate) return error("No expiry date")
+		return dayjs().isBefore(dayjs(expiryDate))
+	} catch (e){
+		error(e)
+	}
+}
 export function isFromTelegram(telegramInitData){
 	const initData = new URLSearchParams(telegramInitData);
 	const hash = initData.get("hash");
@@ -147,4 +158,5 @@ export default {
 	get,
 	sendFirebaseToken,
 	isFromTelegram,
+	isAllowed,
 }

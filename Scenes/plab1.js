@@ -7,7 +7,8 @@ const plab1Features = {
 		await ctx.reply("You clicked on mocks")
 	},
 	'materials' : async ({ctx}) => {
-		await ctx.reply("You clicked on materials")
+		ctx.answerCbQuery("Getting materials...")
+		await ctx.scene.enter("materials",{from : "plab1"})
 	},
 }
 const webapps = [
@@ -44,7 +45,6 @@ These are features that come with /plab1
 composer.action(/plab1_.+/,async (ctx) => {
 	const buttonId = ctx.match[0]
 	const feature = buttonId.substr(6)
-	console.log(feature)
 	await plab1Features[feature]({ctx})
 })
 const scene = new Scenes.WizardScene('plab1', ...steps);

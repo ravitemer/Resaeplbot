@@ -1,21 +1,77 @@
-import fs from "fs";
+async function _prepareSubscriptionDetails({ uid }) {
+	const doc = await admin.user.get({ uid })
+	let expiryDate = (doc.expiryDate && doc.expiryDate.toDate) ? doc.expiryDate.toDate() : new Date()
+	const expiryString = ` ${dayjs().isBefore(dayjs(expiryDate)) ? "ends" : "ended"} ${dayjs(expiryDate).fromNow()}`
+	expiryDate = `${dayjs(expiryDate).format("DD/MM/YYYY")}`
+	const text = `
+⚠️ Your subscription ${expiryString} on ${expiryDate} 
+
+💳 Click below to extend now at just £${process.env.MONTHLY_COST || 1} / month. 
+
+🥳 📣  You can also extend ${process.env.REFERRAL_BONUS || 5} days with every successful referral! 
+  `
+	const keyboard = [
+		[markup.button.callback("💳 Extend", "subscription_extend")],
+		[markup.button.callback("📣 Refer", "subscription_refer")]
+	]
+	return { text, keyboard }
+}
+
+async function sendCurrentSubscriptionDetails({ ctx, uid, shouldEdit }) {
+	try {
+		if (shouldEdit) {
+			const { text, keyboard } = await _prepareSubscriptionDetails({ uid })
+			ctx.editMessageText(text, markup.inlineKeyboard(keyboard))
+		} else {
+			await utils.emoji({
+				ctx,
+				done: async ({ chat_id, message_id }) => {
+					const { text, keyboard } = await _prepareSubscriptionDetails({ uid })
+					await ctx.telegram.editMessageText(chat_id, message_id, undefined, text, {
+						reply_markup: {
+							inline_keyboard: keyboard
+						}
+					})
+				}
+			})
+		}
+	} catch (e) {
+		error(e)
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 async function sendPlans({ ctx, }) {
-	const info = `
- Subscribe at just ${process.env.MONTHLY_COST}£ / month. Subscribered users can access all the materials and multiple choice questions at a cost of coffee for whole month. You can subscribe for 1 month = ${process.env.MONTHLY_COST || 1}£, 3 months = ${parseInt(process.env.MONTHLY_COST || 1) * 2.5}£ or 5 months = ${parseInt(process.env.MONTHLY_COST || 1) * 4}£.
-  `
-	const msg = await ctx.replyWithPhoto("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiGpyM-9GUds6NyE-ytUjwxEC8Fp-Y94CkyA&usqp=CAU", {
-		caption: info
-	})
-	ctx.wizard.state.deleteMsg = msg.message_id
-
-	await ctx.reply(`
-Choose a plan from below.
-    `,
+	await ctx.editMessageText(`Choose from the following plans. Once clicked you will be sent a invoice right here with a pay button.You can click it pay. It's that simple`,
 		markup.inlineKeyboard([
-			[markup.button.callback(`${parseInt(process.env.MONTHLY_COST || 1)}£ / 1 month`, "subscription:1")],
-			[markup.button.callback(`${parseInt(process.env.MONTHLY_COST || 1) * 2.5}£ / 3 months`, "subscription:3")],
-			[markup.button.callback(`${parseInt(process.env.MONTHLY_COST || 1) * 4}£ / 5 months`, "subscription:5")],
+			[markup.button.callback(`£${process.env.MONTHLY_COST} - 1 month`, "subscriptionfor_1")],
+
+			[markup.button.callback(`£${process.env.MONTHLY_COST} - 3 months`, "subscriptionfor_3")],
+			[markup.button.callback(`£${process.env.MONTHLY_COST} - 5 months`, "subscriptionfor_5")],
+			[markup.button.callback("⏪ Back", "subscriptionback")]
 		]))
 }
 
@@ -48,11 +104,31 @@ async function sendInvoice({ ctx, months, currency }) {
 	await ctx.replyWithInvoice(invoice)
 
 }
+export async function sendReferralLink({ ctx }) {
+	//await ctx.log(`Generating referral link for ${uid}`)
+	//const token = jwt.sign(uid,process.env.JWT_SECRET_KEY)
+	const info = `
+Hey there! 
+I found this amazing telegram bot that helps me with my PLAB preparation. You can use my link and get extra ${process.env.REFERRAL_BONUS} days of unlimited access.
+https://t.me/${ctx.botInfo.username}?start=admin`
+	await utils.emoji({
+		ctx,
+		emoji: "📣",
+		done: async () => {
+			// await ctx.replyWithPhoto("https://picsum.photos/300/300?random", { caption: info })
+			await ctx.replyWithHTML(info)
+			await ctx.reply("You get referral credits whenever a new user signup using the above link. You can share it anywhere not just telegram.")
+		}
+	})
+
+}
 
 
 export default {
 	sendInvoice,
 	sendPlans,
+	sendReferralLink,
+	sendCurrentSubscriptionDetails,
 }
 
 
