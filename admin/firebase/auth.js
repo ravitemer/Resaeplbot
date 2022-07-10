@@ -59,4 +59,5 @@ export default {
 	createUserAccount,
 	getUserAccount,
 	deleteUserAccount,
+	auth,
 }
