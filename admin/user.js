@@ -109,7 +109,7 @@ export async function sendFirebaseToken(user) {
 		}
 		if (user) {
 			claims = user.customClaims
-			const token = await auth.createCustomToken(uid, claims)
+			const token = await Auth.createCustomToken(uid, claims)
 			return token
 		}
 	} catch (e) {

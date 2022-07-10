@@ -25,7 +25,7 @@ export default {
            res.status(401).send("You should open from telegram")     
          }
        } catch (e){
-          console.error(e)
+          error(e)
           res.status(500).send(e.message)
        }
      }
