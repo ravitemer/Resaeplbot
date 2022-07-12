@@ -24,6 +24,7 @@ for (let level in logsObj){
 }
 
 const isDev = () => process.env.NODE_ENV == "development"
+const arePaymentsEnabled = () => process.env.ENABLE_PAYMENTS == "true"
 
 function emojify(strings,...args){
 	let numbers = {
@@ -59,6 +60,7 @@ export default {
   axios,
   markup : Markup,
   isDev,
+	arePaymentsEnabled,
   ...Keyboards,
   admin, 
   dayjs,

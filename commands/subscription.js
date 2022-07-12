@@ -6,7 +6,9 @@ export default {
 		const uid = username
 		const user = { userName: username, firstName: first_name, lastName: last_name, uid: username, chatId: id, createdAt: date }
 		try {
-			await admin.payment.sendCurrentSubscriptionDetails({ctx,uid})
+			if (arePaymentsEnabled()){
+				await admin.payment.sendCurrentSubscriptionDetails({ctx,uid})
+			}
 		} catch (e) {
 			console.log(e)
 		}

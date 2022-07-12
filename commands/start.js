@@ -8,6 +8,9 @@ import fs from "fs"
 // At the cost of a coffee / month. You can pay right here securely.
 // If you can't afford the subscription, you can refer and get ${process.env.REFERRAL_BONUS} days for every referral. 
 // </tg-spoiler>
+const paidInfo = `🤖 <b>Do I need a subscription to work?</b>
+<b>No!</b> Once you start the bot, you get ${process.env.FREE_TRIAL_PERIOD || 10} days of full access for free. If you used a referral link to start with, you get extra ${process.env.REFERRAL_BONUS || 5} days. If you /refer someone, for every referee you get extra ${process.env.REFERRAL_BONUS} days.
+Once you ranout, you have limted access and need a /subscription at just <tg-spoiler><b>${process.env.CURRENCY_SYMBOL || "£"}${process.env.MONTHLY_COST}/ month</b></tg-spoiler>.`
 
 const startingMessage = ({bot,user}) => {
 	return `
@@ -28,10 +31,7 @@ A lot! I can be a <b>Co-pilot</b> in your <b>PLAB</b> journey.
 
 ✅ <b>PLAB 2</b>: /plab2
      Coming soon !!! 
-
-🤖 <b>Do I need a subscription to work?</b>
-<b>No!</b> Once you start the bot, you get ${process.env.FREE_TRIAL_PERIOD || 10} days of full access for free. If you used a referral link to start with, you get extra ${process.env.REFERRAL_BONUS || 5} days. If you /refer someone, for every referee you get extra ${process.env.REFERRAL_BONUS} days.
-Once you ranout, you have limted access and need a /subscription at just <tg-spoiler><b>${process.env.CURRENCY_SYMBOL || "£"}${process.env.MONTHLY_COST}/ month</b></tg-spoiler>.
+${arePaymentsEnabled() ? paidInfo : ""}
 
 <b>🤖 Extra information?</b> /help
 Help is just a tap away.

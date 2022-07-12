@@ -41,15 +41,17 @@ async function create({ uid, user, ctx, startPayload }) {
 
 						//Store current user in store
 						const createdUser = await Users.createReferee({ uid, user, referrer: referrer })
-						ctx.reply(`🎊 🥳 You are referred by @${referrer}! Your trail has been extended by ${process.env.REFERRAL_BONUS || 1} ${parseInt(process.env.REFERRAL_BONUS || 1) > 1 ? "days" : "day"}. 
-Enjoy unlimited access until ${dayjs(createdUser.expiryDate).format('DD/MM/YYYY')}`)
+	const refereePaidInfo = `Your trail has been extended by ${process.env.REFERRAL_BONUS || 1} ${parseInt(process.env.REFERRAL_BONUS || 1) > 1 ? "days" : "day"}. 
+Enjoy unlimited access until ${dayjs(createdUser.expiryDate).format('DD/MM/YYYY')}`
+						ctx.reply(`🎊 🥳 You are referred by @${referrer}! ${arePaymentsEnabled() ? refereePaidInfo : ""}`)
 
 						// Update referrer`s Store
 						const updateOperation = await Users.updateReferrer({ uid, oldDocument: referrerDocument,referredTime : user.createdAt })
 						if (referrerDocument.notifyReferrals !== false && updateOperation.success) {
+							const referrerPaidInfo = `Your trail is now extended by ${process.env.REFERRAL_BONUS || 1} ${parseInt(process.env.REFERRAL_BONUS || 1) > 1 ? "days" : "day"}.
+Enjoy unlimited access until ${dayjs(updateOperation.expiryDate).format('DD/MM/YYYY')}.`
 							ctx.telegram.sendMessage(referrerDocument.chatId, `
-🎊 🥳 Your referral link has been used by @${uid}! Your trail is now extended by ${process.env.REFERRAL_BONUS || 1} ${parseInt(process.env.REFERRAL_BONUS || 1) > 1 ? "days" : "day"}.
-Enjoy unlimited access until ${dayjs(updateOperation.expiryDate).format('DD/MM/YYYY')}.
+🎊 🥳 Your referral link has been used by @${uid}! ${arePaymentsEnabled() ? referrerPaidInfo : ""}
               `)
 						}
 					} else {

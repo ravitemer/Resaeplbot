@@ -37,7 +37,7 @@ export default async function powerBot(bot,onCompletion){
   //setcommands before coupling so getCommands filled up with new commands.
 	await bot.telegram.setMyCommands(Object.entries(funcs["commands"]).map(([command,{description}]) => {
           return {command,description}
-          }).filter(({command}) => !["start","dev","settings"].includes(command)))
+          }).filter(({command}) => !["start","dev","settings",arePaymentsEnabled() && "subscription" ].includes(command)))
   bot.use(async (ctx,next) => {
     try {
         setCustomContext(ctx)
