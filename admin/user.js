@@ -132,7 +132,8 @@ export async function isAllowed({uid}){
 	}
 }
 export function isFromTelegram(telegramInitData){
-	const initData = new URLSearchParams(telegramInitData);
+	try {
+		const initData = new URLSearchParams(telegramInitData);
 	const hash = initData.get("hash");
 	const user = initData.get("user")
 
@@ -149,6 +150,14 @@ export function isFromTelegram(telegramInitData){
 		isGenuine: isFromTele,
 		user: JSON.parse(user)
 	}
+	} catch (e){
+		console.log(e)
+		return {
+			isGenuine : false,
+			user : {}
+		}
+	}
+	
 }
 
 
