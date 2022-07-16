@@ -25,7 +25,7 @@ async function create({ uid, user, ctx, startPayload }) {
 			uid,
 			user
 		})
-		ctx.log(`Checking whether ${uid} previously used the bot : storeDoc`)
+		log(`Checking whether ${uid} previously used the bot : storeDoc`)
 		const userDocument = await Users.getUserDocument({ uid })
 		if (!userDocument) {
 			log(`This is your first time using the bot.`)

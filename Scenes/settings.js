@@ -5,9 +5,8 @@ const steps = [
     try {
     const {username} = ctx.message.from
     if (!username) return error("No user name provided in settings")
-    const userData = await admin.getUserDoc(username)
-    const toggleReferralNotifications = (userData && userData.notifyReferrals == false) ? markup.button.callback(`🔔 Notify referrals`,"notify_referral") : markup.button.callback(`🔕 Stop Referral Notifications`,"dont_notify_referral")
-    
+    const userData = await admin.user.get({uid : username})
+    const toggleReferralNotifications = (userData && userData.notifyReferrals == false) ? markup.button.callback(`🔔 Notify referrals`,"notify_referral") : markup.button.callback(`🔕 Stop Referral Notifications`,"dont_notify_referral")    
     const info = `
     Basic settings
     `
@@ -15,8 +14,9 @@ const steps = [
      markup.button.callback("Delete my data","delete_user") ,
      toggleReferralNotifications,
     ]))
+			
     ctx.wizard.next()
-      
+ 
     } catch (e){
       error(e)
     }

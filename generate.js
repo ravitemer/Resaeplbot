@@ -40,7 +40,7 @@ async function readDeepDir(pointer) {
 			singleFileComposers[composerFile.split('.')[0]] = (await import(filepointer)).default
 		}
 		return {
-			bundle : composersObj,
+			bundles : composersObj,
 			singleFileComposers
 		}
 	} catch (e) {
@@ -68,7 +68,6 @@ export default async function generateFunctions(folders) {
 	try {
 		for (let folder of folders) {
 			if (folder == "Composers") {
-
 				funcObj[folder] = await readDeepDir(folder)
 				for (const [composer, composerFuncs] of Object.entries(funcObj["Composers"].bundles || {})) {
 					const bot = new Composer()
@@ -83,7 +82,6 @@ export default async function generateFunctions(folders) {
 
 			}
 		}
-		//global.funcs = funcObj
 		return funcObj
 	} catch (e) {
 		error(e)

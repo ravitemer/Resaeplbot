@@ -6,6 +6,7 @@ export default {
   Here you can edit you proress, delete it.
   It all upto you.
   `
-  ctx.scene.enter("settings")
+	 //🚨 TODO : Fix for production
+	 ctx.scene.enter("settings")
  }
 }
