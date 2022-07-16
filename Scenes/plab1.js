@@ -13,7 +13,7 @@ const plab1Features = {
 }
 const webapps = [
 	[
-		markup.button.webApp("📈 Progress", "https://telegram-nuxt.vercel.app/1700"),
+		markup.button.webApp("📈 Practice", "https://telegram-nuxt.vercel.app/1700"),
 	],
 	[
 		markup.button.webApp("🔖 Bookmarks", "https://telegram-nuxt.vercel.app/1700/bookmarks"),
