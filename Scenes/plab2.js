@@ -4,7 +4,8 @@ const composer = new Composer()
 
 const plab2Features = {
 	'materials' : async ({ctx}) => {
-		await ctx.scene.enter("materials",{from : "plab2"})
+		ctx.answerCbQuery()
+		await admin.materials.sendCategories({ctx})
 	},
 }
 

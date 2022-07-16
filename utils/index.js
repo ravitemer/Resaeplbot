@@ -55,6 +55,7 @@ export default async function powerBot(bot,onCompletion){
   utils.coupleBotWithFolders(bot,funcs)
   //++++++++++++++++++++++++++Use Composers+++++++++++++++++++
 	bot.use(composers.subscription)
+	bot.use(composers.materials)
   //+++++++++++++++++++++++++++++++++Individual functions++++++++++++++++++++++
   bot.catch((err, ctx) => {
 	return ctx.reply(`Ooops, encountered an error for ${ctx.updateType}`, err)

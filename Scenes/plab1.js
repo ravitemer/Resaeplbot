@@ -8,7 +8,7 @@ const plab1Features = {
 	},
 	'materials' : async ({ctx}) => {
 		ctx.answerCbQuery("Getting materials...")
-		await ctx.scene.enter("materials",{from : "plab1"})
+		await admin.materials.sendCategories({ctx})
 	},
 }
 const webapps = [

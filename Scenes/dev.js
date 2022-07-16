@@ -6,11 +6,11 @@ const composer = new Composer()
 
 const devFeatures = {
 	"upload_files": async ({ ctx, dontEdit }) => {
-		let documentCategories = admin.utils.fsdb.get("documents") || {}
+		let documentCategories = await admin.materials.getCategories()
 		documentCategories = Object.keys(documentCategories)
 		await ctx[dontEdit ? "reply" : "editMessageText"]("Choose a category to upload to...", markup.inlineKeyboard([
 			...documentCategories.map(cat => ([markup.button.callback(cat, `upload_file_cat_${cat}`)])),
-			[markup.button.callback("Create category", `upload_file_cat_create`)],
+			[markup.button.callback("🆕 Create category", `upload_file_cat_create`)],
 			[markup.button.callback("⏪ Back", `back_to_main`)]
 		]))
 	},
@@ -68,7 +68,10 @@ composer.action(/back_to_.+/,async ctx => {
 		 await ctx.editMessageText("What can I do for you?", markup.inlineKeyboard([
 			[
 				markup.button.callback("⏫ Upload files", "dev_upload_files"),
-			]
+			],
+			[
+				markup.button.webApp("Dev","https://telegram-nuxt.vercel.app/dev")
+			],
 		]))
 	 } else if (destination == "cat") {
 		 await devFeatures['upload_files']({ctx})
@@ -80,18 +83,14 @@ composer.action(/back_to_.+/,async ctx => {
 composer.command("createcat", async (ctx) => {
 	const [command, category] = ctx.message.text.split(" ")
 	if (!category) return ctx.reply('No category provided')
-	const exists = admin.utils.fsdb.has(`documents.${category}`)
-	if (exists) return ctx.reply("That category already exists")
-	admin.utils.fsdb.set(`documents.${category}`, { Miscellaneous: [] })
+	admin.materials.createCategory({category})
 	await devFeatures['upload_files']({ ctx, dontEdit: true })
 })
 composer.command("createsubcat", async (ctx) => {
-	const [command, subcategory] = ctx.message.text.split(" ")
-	if (!subcategory) return ctx.reply('No category provided')
+	const [command, subCategory] = ctx.message.text.split(" ")
+	if (!subCategory) return ctx.reply('No category provided')
 	const category = ctx.wizard.state.category
-	const exists = admin.utils.fsdb.has(`documents.${category}.${subcategory}`)
-	if (exists) return ctx.reply("This subcategory already exists")
-	admin.utils.fsdb.set(`documents.${category}.${subcategory}`, [])
+	admin.materials.createSubCategory({subCategory,category})
 	await onCategoryClick({ ctx, category, dontEdit: true })
 })
 //============================= Events ============================
@@ -103,11 +102,16 @@ composer.on("document", async ctx => {
 		return ctx.reply(`Please choose a category and subcategory`)
 	}
 	if (file_id) {
-		admin.utils.fsdb.push(`documents.${category}.${subCategory}`, { filename, file_id })
+		admin.materials.saveFile({category,subCategory, filename, file_id })
 		ctx.reply(`Successfully stored ${filename} in ${category}.${subCategory}`)
 	} else {
 		await ctx.reply("🤖 file_id doesnot exist")
 	}
+})
+
+composer.use(async (ctx) => {
+	ctx.reply("Left dev mode")
+	ctx.scene.leave()
 })
 //============================================================
 
@@ -122,26 +126,22 @@ export default scene;
 
 //=========================================================
 async function onCategoryClick({ ctx, category, dontEdit }) {
-	const categoryDb = admin.utils.fsdb.get(`documents.${category}`)
-	let newCategoryDb = {}
-	if (!categoryDb) newCategoryDb = { Miscellaneous: [] }
-	else newCategoryDb = categoryDb
-	const subcategories = Object.keys(newCategoryDb)
+	let subCategories = await admin.materials.getSubCategories(category)
+	 subCategories = Object.entries(subCategories).filter(([k,v]) => k != "_meta")
 	ctx.wizard.state.category = category
-	if (subcategories.length > 0) {
+
 		await ctx[dontEdit ? "reply" : "editMessageText"](`Choose a subcategory in ${category}`, markup.inlineKeyboard([
-			...subcategories.map(subcat => ([markup.button.callback(subcat, `upload_file_subcat_${subcat}`)])),
-			[markup.button.callback("Create a subcategory", `upload_file_subcat_create`)],
+			...subCategories.map(([subcat,value]) => ([markup.button.callback(subcat + " - " + emojify`${value.files && Object.values(value.files).length || 0}`, `upload_file_subcat_${subcat}`)])),
+			[markup.button.callback("🆕 Create a subcategory", `upload_file_subcat_create`)],
 			[markup.button.callback("⏪ Back", `back_to_cat`)]
 		]))
-	}
 }
 
 async function onSubCategoryClick({ ctx, subCategory }) {
-	const subCategoryDb = admin.utils.fsdb.get(`documents.${ctx.wizard.state.category}.${subCategory}`)
-	let newSubCategoryDb = []
-	if (!subCategoryDb) newSubCategoryDb = []
-	else newSubCategoryDb = subCategoryDb
+	// const subCategoryDb = admin.utils.fsdb.get(`documents.${ctx.wizard.state.category}.${subCategory}`)
+	// let newSubCategoryDb = []
+	// if (!subCategoryDb) newSubCategoryDb = []
+	// else newSubCategoryDb = subCategoryDb
 	ctx.wizard.state.subCategory = subCategory
 	await ctx.reply(`Okay...Storing in ${ctx.wizard.state.category}.${subCategory}`)
 }
