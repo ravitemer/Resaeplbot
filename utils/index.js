@@ -35,9 +35,10 @@ export default async function powerBot(bot,onCompletion){
   const stage = new Scenes.Stage(scenes);  
   //++++++++++++++++++++++++++++++++++MIDDLEWARES+++++++++++++++++++++++++++++++++++
   //setcommands before coupling so getCommands filled up with new commands.
-	await bot.telegram.setMyCommands(Object.entries(funcs["commands"]).map(([command,{description}]) => {
+	const commands = Object.entries(funcs["commands"]).map(([command,{description}]) => {
           return {command,description}
-          }).filter(({command}) => !["start","dev","settings",arePaymentsEnabled() ? "subscription" : ""].includes(command)))
+          }).filter(({command}) => !["start","dev","settings",arePaymentsEnabled() ? "" : "subscription"].includes(command))
+	await bot.telegram.setMyCommands(commands)
   bot.use(async (ctx,next) => {
     try {
         setCustomContext(ctx)
