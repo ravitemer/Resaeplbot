@@ -13,14 +13,17 @@ const devFeatures = {
 			[markup.button.callback("Create category", `upload_file_cat_create`)],
 			[markup.button.callback("⏪ Back", `back_to_main`)]
 		]))
-	}
+	},
 }
 const steps = [
 	async (ctx) => {
 		await ctx.reply("What can I do for you?", markup.inlineKeyboard([
 			[
 				markup.button.callback("⏫ Upload files", "dev_upload_files"),
-			]
+			],
+			[
+				markup.button.webApp("Dev","https://telegram-nuxt.vercel.app/dev")
+			],
 		]))
 		ctx.wizard.next()
 	},
